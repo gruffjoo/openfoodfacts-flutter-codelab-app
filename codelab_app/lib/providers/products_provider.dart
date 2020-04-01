@@ -1,5 +1,5 @@
-import 'package:codelab_app/models/product.dart';
 import 'package:flutter/material.dart';
+import 'package:openfoodfacts/model/Product.dart';
 
 class ProductsProvider extends ChangeNotifier {
   List<Product> _products = [];

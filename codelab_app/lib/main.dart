@@ -11,12 +11,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => ProductsProvider(),
       child: MaterialApp(
-        title: 'Flutter OpenFoodFacts Codelabe',
+        title: 'Flutter OpenFoodFacts Codelab',
         theme: ThemeData(
           primarySwatch: Colors.orange,
         ),
         home: ProductsListPage(),
-      );,
-    )
+      ),
+    );
   }
 }

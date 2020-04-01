@@ -1,7 +1,7 @@
-import 'package:codelab_app/models/product.dart';
 import 'package:codelab_app/pages/product_detail_page.dart';
 import 'package:codelab_app/providers/products_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:openfoodfacts/model/Product.dart';
 import 'package:provider/provider.dart';
 
 class ProductsListPage extends StatefulWidget {

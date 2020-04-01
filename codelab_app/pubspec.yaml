@@ -11,6 +11,9 @@ dependencies:
   cupertino_icons: ^0.1.2
   provider: ^4.0.4
   qr_code_scanner: ^0.0.12
+  openfoodfacts:
+    git:
+      url: https://github.com/openfoodfacts/openfoodfacts-dart
 
 dev_dependencies:
   flutter_test:
