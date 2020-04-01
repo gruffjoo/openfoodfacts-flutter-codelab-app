@@ -48,10 +48,6 @@ class _ProductsListPageState extends State<ProductsListPage>
   // ########### NAVIGATION
   //
 
-  void _presentScannerPage() {
-    // TODO: to implement
-  }
-
   void _presentProductDetailPage(Product product) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => ProductDetailPage(product)));

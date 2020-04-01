@@ -9,8 +9,8 @@ class ProductOverviewTile extends StatelessWidget {
 
   Widget _buildProductImage() {
     return Container(
-      height: 60,
-      width: 60,
+      height: 50,
+      width: 50,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
