@@ -8,7 +8,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return ChangeNotifierProvider<ProductsProvider>(
       create: (_) => ProductsProvider(),
       child: MaterialApp(
         title: 'Flutter OpenFoodFacts Codelab',

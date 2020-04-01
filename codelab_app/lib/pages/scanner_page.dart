@@ -31,9 +31,9 @@ class _ScannerPageState extends State<ScannerPage> {
     _qrViewController.scannedDataStream.listen(_onCodeScanned);
   }
 
-  void _onCodeScanned(String code) {
-    final ProductsProvider provider = Provider.of<ProductsProvider>(context);
-    provider.findProductFromBarcode(code);
+  Future _onCodeScanned(String code) async {
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .findProductFromBarcode(code);
   }
 
   //

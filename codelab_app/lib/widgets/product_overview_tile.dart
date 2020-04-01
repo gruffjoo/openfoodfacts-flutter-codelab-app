@@ -9,8 +9,8 @@ class ProductOverviewTile extends StatelessWidget {
 
   Widget _buildProductImage() {
     return Container(
-      height: 30,
-      width: 30,
+      height: 60,
+      width: 60,
       decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
@@ -20,7 +20,16 @@ class ProductOverviewTile extends StatelessWidget {
 
   Widget _buildTextsColumn() {
     return Column(
-      children: <Widget>[Text(product.productName), Text(product.brands)],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        if (product.productName != null && product.productName.isNotEmpty)
+          Text(
+            product.productName,
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        if (product.brands != null && product.brands.isNotEmpty)
+          Text(product.brands)
+      ],
     );
   }
 
@@ -28,9 +37,9 @@ class ProductOverviewTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        _buildProductImage(),
+        if (product.imgSmallUrl != null) _buildProductImage(),
         SizedBox(
-          width: 8,
+          width: 20,
         ),
         Expanded(
           child: _buildTextsColumn(),
@@ -38,7 +47,7 @@ class ProductOverviewTile extends StatelessWidget {
         SizedBox(
           width: 8,
         ),
-        NutriscoreWidget(product.nutriscore)
+        if (product.nutriscore != null) NutriscoreWidget(product.nutriscore)
       ],
     );
   }
