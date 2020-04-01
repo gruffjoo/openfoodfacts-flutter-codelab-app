@@ -1,5 +1,6 @@
 import 'package:codelab_app/pages/product_detail_page.dart';
 import 'package:codelab_app/providers/products_provider.dart';
+import 'package:codelab_app/widgets/product_overview_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:openfoodfacts/model/Product.dart';
 import 'package:provider/provider.dart';
@@ -41,8 +42,12 @@ class _ProductsListPageState extends State<ProductsListPage> {
     return ListView.builder(
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {
-        // TODO: to implement
-        return Container();
+        return GestureDetector(
+          onTap: () => _presentProductDetailPage(products[index]),
+          child: Container(
+              padding: EdgeInsets.all(12.0),
+              child: ProductOverviewTile(products[index])),
+        );
       },
     );
   }
@@ -50,15 +55,15 @@ class _ProductsListPageState extends State<ProductsListPage> {
   @override
   Widget build(BuildContext context) {
     final ProductsProvider provider = Provider.of<ProductsProvider>(context);
-    Widget child;
+    Widget pageContent;
 
     if (provider.products == null || provider.products.isEmpty)
-      child = _buildEmptyProductsPlaceholder();
+      pageContent = _buildEmptyProductsPlaceholder();
     else
-      child = _buildProductsList(provider.products);
+      pageContent = _buildProductsList(provider.products);
 
     return Scaffold(
-      body: child,
+      body: pageContent,
     );
   }
 }
