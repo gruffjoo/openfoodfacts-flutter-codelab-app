@@ -13,6 +13,8 @@ class ProductsListPage extends StatefulWidget {
 
 class _ProductsListPageState extends State<ProductsListPage>
     with SingleTickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+
   AnimationController _animationController;
 
   /// The offset applied on the Products list widget when presenting the scanner
@@ -20,7 +22,11 @@ class _ProductsListPageState extends State<ProductsListPage>
   Animation<Offset> _transitionProductsListOffset;
 
   double get _dragExtent => MediaQuery.of(context).size.height;
+  // Indicates if the direction of the drag is form bottom to top or inverse.
   bool _dragIsGoingUp = false;
+  // Indicates if the drag event is to scroll the ListView or to switch between
+  // scanner & products list.
+  bool _dragIsScrollingListView = false;
 
   //
   // ########### LIFECYCLE
@@ -40,6 +46,7 @@ class _ProductsListPageState extends State<ProductsListPage>
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _animationController.dispose();
     super.dispose();
   }
@@ -57,25 +64,35 @@ class _ProductsListPageState extends State<ProductsListPage>
   // ########### DRAG / SCANNER ANIMATION
   //
 
-  void _handleDragIndicatorTap() {
-    // Animation at the beginning = products list presented
-    if (_animationController.value < 0.5)
-      _animationController.forward();
-    // Animation at the end = scanner presented
-    else
-      _animationController.reverse();
-  }
-
   void _handleVerticalDragUpdate(DragUpdateDetails details) {
     _dragIsGoingUp = details.primaryDelta < 0;
 
-    double progress =
-        _animationController.value + details.primaryDelta / (_dragExtent * 0.8);
+    // While there is an offset on the ListView, we consider the drag as a
+    // ListView scroll.
+    // Since we may not have a ListView on display (empty product list), we check
+    // that the scroll controller has some positions => a ListView that is
+    // attached to it.
+    _dragIsScrollingListView = _scrollController.positions.isNotEmpty &&
+        ((!_dragIsGoingUp && _scrollController.offset >= 0) ||
+            (_dragIsGoingUp && _animationController.value <= 0));
 
-    _animationController.value = progress;
+    // DragUpdateDetails.primaryDelta is only the quantity of drag since the
+    // last update.
+
+    if (_dragIsScrollingListView) {
+      double listViewScrollProgress =
+          _scrollController.offset - details.primaryDelta;
+      _scrollController.jumpTo(listViewScrollProgress);
+    } else {
+      double pageTransitionProgress = _animationController.value +
+          details.primaryDelta / (_dragExtent * 0.8);
+      _animationController.value = pageTransitionProgress;
+    }
   }
 
   void _handleVerticalDragEnd(DragEndDetails details) {
+    if (_dragIsScrollingListView) return;
+
     if (_dragIsGoingUp) {
       // Animation from the scanner to close the scanner
       if (_animationController.value <= 0.75)
@@ -96,20 +113,14 @@ class _ProductsListPageState extends State<ProductsListPage>
   //
 
   Widget _buildDragIndicator() {
-    return GestureDetector(
-      onVerticalDragUpdate: _handleVerticalDragUpdate,
-      onVerticalDragEnd: _handleVerticalDragEnd,
-      onTap: _handleDragIndicatorTap,
-      behavior: HitTestBehavior.translucent,
-      child: Container(
-        // GestureDetector
-        margin: EdgeInsets.symmetric(horizontal: 60.0, vertical: 12.0),
-        width: 60,
-        height: 8,
-        decoration: BoxDecoration(
-            color: Colors.grey.withAlpha(150),
-            borderRadius: BorderRadius.circular(5)),
-      ),
+    return Container(
+      // GestureDetector
+      margin: EdgeInsets.symmetric(horizontal: 60.0, vertical: 12.0),
+      width: 60,
+      height: 8,
+      decoration: BoxDecoration(
+          color: Colors.grey.withAlpha(150),
+          borderRadius: BorderRadius.circular(5)),
     );
   }
 
@@ -127,6 +138,10 @@ class _ProductsListPageState extends State<ProductsListPage>
 
   Widget _buildProductsList(List<Product> products) {
     return ListView.separated(
+      // Physics of ListView is NeverScrollable so that only the GestureDetector
+      // higher in the widget tree control the scroll on the List.
+      physics: NeverScrollableScrollPhysics(),
+      controller: _scrollController,
       padding: EdgeInsets.all(0.0),
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {
@@ -156,24 +171,29 @@ class _ProductsListPageState extends State<ProductsListPage>
     else
       pageContent = _buildProductsList(provider.products);
 
-    return SlideTransition(
-      position: _transitionProductsListOffset,
-      child: Padding(
-        padding:
-            EdgeInsets.only(top: MediaQuery.of(context).padding.top + 20.0),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(20.0),
-                  topLeft: Radius.circular(20.0))),
-          child: Column(
-            children: <Widget>[
-              _buildDragIndicator(),
-              Expanded(
-                child: pageContent,
-              )
-            ],
+    return GestureDetector(
+      onVerticalDragUpdate: _handleVerticalDragUpdate,
+      onVerticalDragEnd: _handleVerticalDragEnd,
+      behavior: HitTestBehavior.translucent,
+      child: SlideTransition(
+        position: _transitionProductsListOffset,
+        child: Padding(
+          padding:
+              EdgeInsets.only(top: MediaQuery.of(context).padding.top + 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20.0),
+                    topLeft: Radius.circular(20.0))),
+            child: Column(
+              children: <Widget>[
+                _buildDragIndicator(),
+                Expanded(
+                  child: pageContent,
+                )
+              ],
+            ),
           ),
         ),
       ),
