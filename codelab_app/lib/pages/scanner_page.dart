@@ -40,6 +40,24 @@ class _ScannerPageState extends State<ScannerPage> {
   // ########### UI
   //
 
+  Widget _buildViewFinderOverlay() {
+    return Center(
+      child: Padding(
+        // Using screen size to show how to create padding proportional to the size
+        // of the screen.
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.05),
+        child: AspectRatio(
+          aspectRatio: 4 / 3,
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.green, width: 3.0)),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildContinuousScannerWidget() {
     return QRView(
       key: _qrKey,
@@ -50,7 +68,12 @@ class _ScannerPageState extends State<ScannerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildContinuousScannerWidget(),
+      body: Stack(
+        children: <Widget>[
+          _buildContinuousScannerWidget(),
+          _buildViewFinderOverlay()
+        ],
+      ),
     );
   }
 }
