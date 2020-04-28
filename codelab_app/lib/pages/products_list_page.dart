@@ -1,3 +1,4 @@
+import 'package:codelab_app/pages/personal_settings_page.dart';
 import 'package:codelab_app/pages/product_detail_page.dart';
 import 'package:codelab_app/pages/scanner_page.dart';
 import 'package:codelab_app/providers/products_provider.dart';
@@ -58,6 +59,11 @@ class _ProductsListPageState extends State<ProductsListPage>
   void _presentProductDetailPage(Product product) {
     Navigator.of(context).push(MaterialPageRoute(
         builder: (BuildContext context) => ProductDetailPage(product)));
+  }
+
+  void _presentPersonalSettingsPage() {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (BuildContext context) => PersonalSettingsPage()));
   }
 
   //
@@ -209,6 +215,10 @@ class _ProductsListPageState extends State<ProductsListPage>
         return Scaffold(
           body: Stack(
             children: <Widget>[ScannerPage(), _buildProductsListPage()],
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.settings),
+            onPressed: _presentPersonalSettingsPage,
           ),
         );
       },
